@@ -1,119 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Animation with BVH</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-    }
-    h1 {
-      text-align: center;
-      margin-top: 20px;
-      color: #333;
-    }
-    .container {
-      display: flex;
-      justify-content: space-between;
-      padding: 20px;
-    }
-    .model-container {
-      width: 48%;
-      height: 500px;
-      position: relative;
-      background-color: white;
-      border: 2px solid #ccc;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .model-container.left {
-      background-color: lightblue;
-    }
-    .model-container.right {
-      background-color: lightgreen;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babylon.js GLB Model</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
 </head>
 <body>
-  <h1>3D Animation with Learner and Trainer</h1>
-  
-  <div class="container">
-    <!-- Learner Model Container -->
-    <div class="model-container left">
-      <div id="learnerCanvas"></div>
-    </div>
+    <canvas id="renderCanvas"></canvas> <!-- 用於渲染的畫布 -->
+    <script>
+        // 設置畫布和引擎
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
 
-    <!-- Trainer Model Container -->
-    <div class="model-container right">
-      <div id="trainerCanvas"></div>
-    </div>
-  </div>
+        // 創建場景
+        const scene = new BABYLON.Scene(engine);
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/GLTFLoader.js"></script>
+        // 創建攝影機
+        const camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);  // 設定控制方式，讓使用者能夠操作視角
 
-  <script>
-    // Setup for Learner Model
-    const sceneLearner = new THREE.Scene();
-    const cameraLearner = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const rendererLearner = new THREE.WebGLRenderer({ antialias: true });
-    rendererLearner.setSize(500, 500); // Set fixed size for the canvas
-    document.getElementById('learnerCanvas').appendChild(rendererLearner.domElement);
+        // 創建光源
+        const light = new BABYLON.HemisphericLight("light1", BABYLON.Vector3.Up(), scene);  // 半球光源
 
-    const ambientLightLearner = new THREE.AmbientLight(0x404040);
-    sceneLearner.add(ambientLightLearner);
-    const directionalLightLearner = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLightLearner.position.set(1, 1, 1);
-    sceneLearner.add(directionalLightLearner);
+        // 加載 GLB 模型
+        BABYLON.SceneLoader.Append("", "result/learner.glb", scene, function (scene) {
+            // 模型加載成功後執行的代碼
+            scene.createDefaultCameraOrLight(true, true, true);  // 創建默認的光源和攝影機
+            scene.createDefaultEnvironment();  // 創建默認環境
+        }, null, function (scene, message) {
+            // 加載過程中的錯誤處理
+            console.error("Error loading model: ", message);
+        });
 
-    const loaderLearner = new THREE.GLTFLoader();
-    loaderLearner.load('/result/learner.glb', (gltf) => {
-      const learnerModel = gltf.scene;
-      learnerModel.position.set(0, 0, 0);
-      sceneLearner.add(learnerModel);
-    }, undefined, function (error) {
-      console.error('An error occurred loading the learner model:', error);
-    });
+        // 啟動渲染循環
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
 
-    cameraLearner.position.set(0, 1, 3);
-
-    function animateLearner() {
-      requestAnimationFrame(animateLearner);
-      rendererLearner.render(sceneLearner, cameraLearner);
-    }
-    animateLearner();
-
-    // Setup for Trainer Model
-    const sceneTrainer = new THREE.Scene();
-    const cameraTrainer = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const rendererTrainer = new THREE.WebGLRenderer({ antialias: true });
-    rendererTrainer.setSize(500, 500); // Set fixed size for the canvas
-    document.getElementById('trainerCanvas').appendChild(rendererTrainer.domElement);
-
-    const ambientLightTrainer = new THREE.AmbientLight(0x404040);
-    sceneTrainer.add(ambientLightTrainer);
-    const directionalLightTrainer = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLightTrainer.position.set(1, 1, 1);
-    sceneTrainer.add(directionalLightTrainer);
-
-    const loaderTrainer = new THREE.GLTFLoader();
-    loaderTrainer.load('/result/trainer.glb', (gltf) => {
-      const trainerModel = gltf.scene;
-      trainerModel.position.set(0, 0, 0);
-      sceneTrainer.add(trainerModel);
-    }, undefined, function (error) {
-      console.error('An error occurred loading the trainer model:', error);
-    });
-
-    cameraTrainer.position.set(0, 1, 3);
-
-    function animateTrainer() {
-      requestAnimationFrame(animateTrainer);
-      rendererTrainer.render(sceneTrainer, cameraTrainer);
-    }
-    animateTrainer();
-  </script>
+        // 視窗調整大小時重新設置引擎
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+    </script>
 </body>
 </html>
