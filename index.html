@@ -5,8 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D Animation with BVH</title>
   <style>
-    body { margin: 0; overflow: hidden; }
-    canvas { display: block; }
+    body { 
+      margin: 0; 
+      display: flex;
+      justify-content: center; 
+      align-items: center; 
+      height: 100vh; /* Full height */
+      background-color: #f0f0f0; /* 背景顏色 */
+    }
+    canvas { 
+      width: 80%;  /* 設定畫面寬度，這裡是 80% */
+      height: 80%; /* 設定畫面高度，這裡是 80% */
+      border: 1px solid #ccc; /* 邊框效果 */
+    }
   </style>
 </head>
 <body>
@@ -20,7 +31,7 @@
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth * 0.8, window.innerHeight * 0.8); // Adjust size
     document.body.appendChild(renderer.domElement);
 
     // Lighting
@@ -36,14 +47,14 @@
     let learnerModel, trainerModel;
     
     // Load learner.glb (Left)
-    loader.load('/root/result/learner.glb', (gltf) => {
+    loader.load('/result/learner.glb', (gltf) => {
       learnerModel = gltf.scene;
       learnerModel.position.set(-2, 0, 0); // Move left
       scene.add(learnerModel);
     });
 
     // Load trainer.glb (Right)
-    loader.load('/root/result/trainer.glb', (gltf) => {
+    loader.load('/result/trainer.glb', (gltf) => {
       trainerModel = gltf.scene;
       trainerModel.position.set(2, 0, 0); // Move right
       scene.add(trainerModel);
@@ -58,7 +69,6 @@
       if (learnerModel && trainerModel) {
         learnerModel.position.set(-2, 0, 0);
         trainerModel.position.set(2, 0, 0);
-        // You can also reset the animation state of the models here if you have animations
       }
     }
 
