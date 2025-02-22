@@ -14,8 +14,8 @@
       background-color: #f0f0f0; /* 背景顏色 */
     }
     canvas { 
-      width: 40%;  /* 設定畫面寬度，這裡是 80% */
-      height: 40%; /* 設定畫面高度，這裡是 80% */
+      width: 50%;  /* 設定畫面寬度為50% */
+      height: 50%; /* 設定畫面高度為50% */
       border: 1px solid #ccc; /* 邊框效果 */
     }
   </style>
@@ -31,7 +31,7 @@
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth * 0.8, window.innerHeight * 0.8); // Adjust size
+    renderer.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5); // 渲染器的大小設為 50% 視窗大小
     document.body.appendChild(renderer.domElement);
 
     // Lighting
@@ -47,14 +47,14 @@
     let learnerModel, trainerModel;
     
     // Load learner.glb (Left)
-    loader.load('/result/learner.glb', (gltf) => {
+    loader.load('/models/learner.glb', (gltf) => {
       learnerModel = gltf.scene;
       learnerModel.position.set(-2, 0, 0); // Move left
       scene.add(learnerModel);
     });
 
     // Load trainer.glb (Right)
-    loader.load('/result/trainer.glb', (gltf) => {
+    loader.load('/models/trainer.glb', (gltf) => {
       trainerModel = gltf.scene;
       trainerModel.position.set(2, 0, 0); // Move right
       scene.add(trainerModel);
