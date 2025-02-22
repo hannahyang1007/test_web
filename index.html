@@ -92,6 +92,26 @@
       console.error('An error occurred loading the learner model:', error);
     });
 
+    // Create video texture for learner.mp4
+    const video = document.createElement('video');
+    video.src = 'result/learner.mp4'; // Path to your video file
+    video.load();
+    video.play();
+    video.loop = true; // Loop the video
+    video.muted = true; // Mute the video to avoid auto-play issues
+
+    const videoTexture = new THREE.VideoTexture(video);
+    videoTexture.minFilter = THREE.LinearFilter;
+    videoTexture.magFilter = THREE.LinearFilter;
+    videoTexture.format = THREE.RGBFormat;
+
+    // Create a plane geometry and apply the video texture
+    const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+    const videoPlane = new THREE.PlaneGeometry(4, 3); // Adjust size as needed
+    const videoMesh = new THREE.Mesh(videoPlane, videoMaterial);
+    videoMesh.position.set(0, 1, 0); // Position it where the learner model is
+    sceneLearner.add(videoMesh);
+
     cameraLearner.position.set(0, 1, 3);
 
     // Setup for Trainer Model
