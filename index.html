@@ -69,21 +69,30 @@
     sceneLearner.add(directionalLightLearner);
 
     const loaderLearner = new THREE.GLTFLoader();
-    loaderLearner.load('result/learner.glb', (gltf) => {
+    loaderLearner.load('learner.glb', (gltf) => {
       const learnerModel = gltf.scene;
       learnerModel.position.set(0, 0, 0);
+      learnerModel.scale.set(1, 1, 1); // Adjust the scale if necessary
       sceneLearner.add(learnerModel);
+
+      // Setup animation
+      const mixer = new THREE.AnimationMixer(learnerModel);
+      gltf.animations.forEach((clip) => {
+        mixer.clipAction(clip).play();
+      });
+
+      // Animation loop
+      function animateLearner() {
+        requestAnimationFrame(animateLearner);
+        mixer.update(0.01); // Update the animation mixer
+        rendererLearner.render(sceneLearner, cameraLearner);
+      }
+      animateLearner();
     }, undefined, function (error) {
       console.error('An error occurred loading the learner model:', error);
     });
 
     cameraLearner.position.set(0, 1, 3);
-
-    function animateLearner() {
-      requestAnimationFrame(animateLearner);
-      rendererLearner.render(sceneLearner, cameraLearner);
-    }
-    animateLearner();
 
     // Setup for Trainer Model
     const sceneTrainer = new THREE.Scene();
@@ -99,21 +108,30 @@
     sceneTrainer.add(directionalLightTrainer);
 
     const loaderTrainer = new THREE.GLTFLoader();
-    loaderTrainer.load('result/trainer.glb', (gltf) => {
+    loaderTrainer.load('trainer.glb', (gltf) => {
       const trainerModel = gltf.scene;
       trainerModel.position.set(0, 0, 0);
+      trainerModel.scale.set(1, 1, 1); // Adjust the scale if necessary
       sceneTrainer.add(trainerModel);
+
+      // Setup animation
+      const mixer = new THREE.AnimationMixer(trainerModel);
+      gltf.animations.forEach((clip) => {
+        mixer.clipAction(clip).play();
+      });
+
+      // Animation loop
+      function animateTrainer() {
+        requestAnimationFrame(animateTrainer);
+        mixer.update(0.01); // Update the animation mixer
+        rendererTrainer.render(sceneTrainer, cameraTrainer);
+      }
+      animateTrainer();
     }, undefined, function (error) {
       console.error('An error occurred loading the trainer model:', error);
     });
 
     cameraTrainer.position.set(0, 1, 3);
-
-    function animateTrainer() {
-      requestAnimationFrame(animateTrainer);
-      rendererTrainer.render(sceneTrainer, cameraTrainer);
-    }
-    animateTrainer();
   </script>
 </body>
 </html>
