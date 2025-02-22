@@ -11,7 +11,7 @@
 </head>
 <body>
   <h1>3D Animation with BVH</h1> <!-- 標題加在這裡 -->
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/GLTFLoader.js"></script>
 
@@ -33,16 +33,18 @@
     // Load models
     const loader = new THREE.GLTFLoader();
 
+    let learnerModel, trainerModel;
+    
     // Load learner.glb (Left)
     loader.load('/root/result/learner.glb', (gltf) => {
-      const learnerModel = gltf.scene;
+      learnerModel = gltf.scene;
       learnerModel.position.set(-2, 0, 0); // Move left
       scene.add(learnerModel);
     });
 
     // Load trainer.glb (Right)
     loader.load('/root/result/trainer.glb', (gltf) => {
-      const trainerModel = gltf.scene;
+      trainerModel = gltf.scene;
       trainerModel.position.set(2, 0, 0); // Move right
       scene.add(trainerModel);
     });
@@ -50,10 +52,26 @@
     // Camera positioning
     camera.position.set(0, 1, 5);
 
+    // Reset animation every 30 seconds
+    let lastTime = Date.now();
+    function resetAnimation() {
+      if (learnerModel && trainerModel) {
+        learnerModel.position.set(-2, 0, 0);
+        trainerModel.position.set(2, 0, 0);
+        // You can also reset the animation state of the models here if you have animations
+      }
+    }
+
     // Animation loop
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
+
+      const currentTime = Date.now();
+      if (currentTime - lastTime > 30000) {  // 30 seconds
+        resetAnimation();
+        lastTime = currentTime;
+      }
     }
     animate();
   </script>
