@@ -5,89 +5,131 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D Animation with BVH</title>
   <style>
-    body { 
-      margin: 0; 
+    body {
+      margin: 0;
       display: flex;
-      justify-content: center; 
-      align-items: center; 
-      height: 100vh; /* Full height */
-      background-color: #f0f0f0; /* 背景顏色 */
+      flex-direction: column; /* 垂直排列 */
+      justify-content: space-between; /* 使上下項目分開 */
+      height: 100vh;
+      background-color: #f0f0f0;
     }
-    canvas { 
-      width: 50%;  /* 設定畫面寬度為50% */
-      height: 50%; /* 設定畫面高度為50% */
-      border: 1px solid #ccc; /* 邊框效果 */
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .canvas-container {
+      display: flex;
+      justify-content: space-between; /* 讓 canvas 置於左右兩側 */
+      align-items: center;
+      flex-grow: 1; /* 讓這部分填滿剩餘空間 */
+      padding: 0 10%;
+    }
+
+    canvas {
+      width: 45%;  /* 畫布寬度為 45% */
+      height: auto;
+      border: 2px solid white; /* 白色邊框 */
+      border-radius: 10px; /* 圓角邊框 */
+    }
+
+    #learner-canvas {
+      background-color: blue; /* learner 使用藍色背景 */
+    }
+
+    #trainer-canvas {
+      background-color: green; /* trainer 使用綠色背景 */
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #333;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <h1>3D Animation with BVH</h1> <!-- 標題加在這裡 -->
+
+  <h1>3D Animation with BVH</h1>
+
+  <div class="canvas-container">
+    <!-- Learner Canvas -->
+    <canvas id="learner-canvas"></canvas>
+
+    <!-- Trainer Canvas -->
+    <canvas id="trainer-canvas"></canvas>
+  </div>
+
+  <footer>
+    <p>© 2025 3D Animation with BVH Project. All rights reserved.</p>
+  </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/GLTFLoader.js"></script>
 
   <script>
-    // Scene setup
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5); // 渲染器的大小設為 50% 視窗大小
-    document.body.appendChild(renderer.domElement);
+    // Scene setup for learner model
+    const sceneLearner = new THREE.Scene();
+    const cameraLearner = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const rendererLearner = new THREE.WebGLRenderer({ antialias: true });
+    rendererLearner.setSize(window.innerWidth * 0.45, window.innerHeight * 0.6);
+    document.getElementById('learner-canvas').appendChild(rendererLearner.domElement);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0x404040);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
+    // Lighting for learner
+    const ambientLightLearner = new THREE.AmbientLight(0x404040);
+    sceneLearner.add(ambientLightLearner);
+    const directionalLightLearner = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLightLearner.position.set(1, 1, 1);
+    sceneLearner.add(directionalLightLearner);
 
-    // Load models
-    const loader = new THREE.GLTFLoader();
+    const loaderLearner = new THREE.GLTFLoader();
 
-    let learnerModel, trainerModel;
-    
-    // Load learner.glb (Left)
-    loader.load('/models/learner.glb', (gltf) => {
-      learnerModel = gltf.scene;
-      learnerModel.position.set(-2, 0, 0); // Move left
-      scene.add(learnerModel);
+    loaderLearner.load('/models/learner.glb', (gltf) => {
+      const learnerModel = gltf.scene;
+      learnerModel.position.set(0, 0, 0);
+      sceneLearner.add(learnerModel);
     });
 
-    // Load trainer.glb (Right)
-    loader.load('/models/trainer.glb', (gltf) => {
-      trainerModel = gltf.scene;
-      trainerModel.position.set(2, 0, 0); // Move right
-      scene.add(trainerModel);
+    cameraLearner.position.set(0, 1, 5);
+
+    function animateLearner() {
+      requestAnimationFrame(animateLearner);
+      rendererLearner.render(sceneLearner, cameraLearner);
+    }
+    animateLearner();
+
+    // Scene setup for trainer model
+    const sceneTrainer = new THREE.Scene();
+    const cameraTrainer = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const rendererTrainer = new THREE.WebGLRenderer({ antialias: true });
+    rendererTrainer.setSize(window.innerWidth * 0.45, window.innerHeight * 0.6);
+    document.getElementById('trainer-canvas').appendChild(rendererTrainer.domElement);
+
+    // Lighting for trainer
+    const ambientLightTrainer = new THREE.AmbientLight(0x404040);
+    sceneTrainer.add(ambientLightTrainer);
+    const directionalLightTrainer = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLightTrainer.position.set(1, 1, 1);
+    sceneTrainer.add(directionalLightTrainer);
+
+    const loaderTrainer = new THREE.GLTFLoader();
+
+    loaderTrainer.load('/models/trainer.glb', (gltf) => {
+      const trainerModel = gltf.scene;
+      trainerModel.position.set(0, 0, 0);
+      sceneTrainer.add(trainerModel);
     });
 
-    // Camera positioning
-    camera.position.set(0, 1, 5);
+    cameraTrainer.position.set(0, 1, 5);
 
-    // Reset animation every 30 seconds
-    let lastTime = Date.now();
-    function resetAnimation() {
-      if (learnerModel && trainerModel) {
-        learnerModel.position.set(-2, 0, 0);
-        trainerModel.position.set(2, 0, 0);
-      }
+    function animateTrainer() {
+      requestAnimationFrame(animateTrainer);
+      rendererTrainer.render(sceneTrainer, cameraTrainer);
     }
-
-    // Animation loop
-    function animate() {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-
-      const currentTime = Date.now();
-      if (currentTime - lastTime > 30000) {  // 30 seconds
-        resetAnimation();
-        lastTime = currentTime;
-      }
-    }
-    animate();
+    animateTrainer();
   </script>
-  
-  <footer>
-    <p>© 2025 3D Animation with BVH Project. All rights reserved.</p>
-  </footer> <!-- 結尾加在這裡 -->
+
 </body>
 </html>
