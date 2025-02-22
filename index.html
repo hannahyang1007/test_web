@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D Animation with BVH</title>
   <style>
-    body { margin: 0; }
+    body { margin: 0; overflow: hidden; }
     canvas { display: block; }
   </style>
 </head>
@@ -17,41 +17,42 @@
     // Scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
     // Lighting
-    const light = new THREE.AmbientLight(0x404040); // Ambient light
-    scene.add(light);
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
-    // Load two .glb BVH files
+    // Load models
     const loader = new THREE.GLTFLoader();
 
-    // Load the first BVH file
-    loader.load('path/to/your/first_model.glb', (gltf) => {
-      const model1 = gltf.scene;
-      scene.add(model1);
+    // Load learner.glb (Left)
+    loader.load('/root/result/learner.glb', (gltf) => {
+      const learnerModel = gltf.scene;
+      learnerModel.position.set(-2, 0, 0); // Move left
+      scene.add(learnerModel);
     });
 
-    // Load the second BVH file
-    loader.load('path/to/your/second_model.glb', (gltf) => {
-      const model2 = gltf.scene;
-      model2.position.x = 2; // Adjust the position of the second model
-      scene.add(model2);
+    // Load trainer.glb (Right)
+    loader.load('/root/result/trainer.glb', (gltf) => {
+      const trainerModel = gltf.scene;
+      trainerModel.position.set(2, 0, 0); // Move right
+      scene.add(trainerModel);
     });
 
     // Camera positioning
-    camera.position.z = 5;
+    camera.position.set(0, 1, 5);
 
     // Animation loop
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
     }
-
     animate();
   </script>
 </body>
