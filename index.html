@@ -86,7 +86,7 @@
 
     const loaderLearner = new THREE.GLTFLoader();
 
-    loaderLearner.load('/models/learner.glb', (gltf) => {
+    loaderLearner.load('/result/learner.glb', (gltf) => {
       const learnerModel = gltf.scene;
       learnerModel.position.set(0, 0, 0);
       sceneLearner.add(learnerModel);
@@ -116,7 +116,7 @@
 
     const loaderTrainer = new THREE.GLTFLoader();
 
-    loaderTrainer.load('/models/trainer.glb', (gltf) => {
+    loaderTrainer.load('/root/result/trainer.glb', (gltf) => {
       const trainerModel = gltf.scene;
       trainerModel.position.set(0, 0, 0);
       sceneTrainer.add(trainerModel);
