@@ -69,7 +69,7 @@
     sceneLearner.add(directionalLightLearner);
 
     const loaderLearner = new THREE.GLTFLoader();
-    loaderLearner.load('learner.glb', (gltf) => {
+    loaderLearner.load('result/learner.glb', (gltf) => {
       const learnerModel = gltf.scene;
       learnerModel.position.set(0, 0, 0);
       sceneLearner.add(learnerModel);
@@ -99,7 +99,7 @@
     sceneTrainer.add(directionalLightTrainer);
 
     const loaderTrainer = new THREE.GLTFLoader();
-    loaderTrainer.load('trainer.glb', (gltf) => {
+    loaderTrainer.load('result/trainer.glb', (gltf) => {
       const trainerModel = gltf.scene;
       trainerModel.position.set(0, 0, 0);
       sceneTrainer.add(trainerModel);
