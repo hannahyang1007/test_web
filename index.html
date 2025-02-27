@@ -3,52 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLB 模型展示</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+    <title>BVH Animation</title>
+    <script src="https://threejs.org/build/three.js"></script>
+    <script src="https://threejs.org/examples/js/loaders/BVHLoader.js"></script>
 </head>
 <body>
-    <div id="glb-container" style="width: 640px; height: 480px;"></div>
-
     <script>
-        // 建立場景
+        // 1. 建立 Three.js 場景
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, 640 / 480, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(640, 480);
-        document.getElementById("glb-container").appendChild(renderer.domElement);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-        // 加入燈光
-        const ambientLight = new THREE.AmbientLight(0xffffff, 2); // 強光
-        scene.add(ambientLight);
+        // 2. BVH 加載器
+        const loader = new THREE.BVHLoader();
+        loader.load('result/learner.bvh', function(result) {
+            const skeletonHelper = new THREE.SkeletonHelper(result.skeleton.bones[0]);
+            skeletonHelper.skeleton = result.skeleton;
+            scene.add(skeletonHelper);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
-        directionalLight.position.set(1, 1, 1);
-        scene.add(directionalLight);
+            // 設定動畫
+            const mixer = new THREE.AnimationMixer(skeletonHelper);
+            const action = mixer.clipAction(result.clip);
+            action.play();
 
-        // 載入 GLB 模型
-        const loader = new THREE.GLTFLoader();
-        loader.load("result/trainer2.glb",
-            function (gltf) {
-                const model = gltf.scene;
-                model.scale.set(1.5, 1.5, 1.5); // 放大模型
-                model.position.set(0, -1, 0); 
-                scene.add(model);
-            },
-            undefined,
-            function (error) { console.error("GLB 加載失敗:", error); }
-        );
+            // 渲染動畫
+            const clock = new THREE.Clock();
+            function animate() {
+                requestAnimationFrame(animate);
+                mixer.update(clock.getDelta()); // 更新動畫
+                renderer.render(scene, camera);
+            }
+            animate();
+        });
 
-        // 設定相機位置
-        camera.position.set(0, 2, 5);
-        camera.lookAt(0, 0, 0);
-
-        // 動畫循環
-        function animate() {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-        }
-        animate();
+        camera.position.z = 3;
     </script>
 </body>
 </html>
